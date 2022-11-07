@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace state
 {
-    internal class Rachunek : IRachunek
+    internal class Rachunek
     {
         float saldo = 0;
         string nazwa;
         IMechanizmOdsetkowy mechanizm = new OdsetkiA();
 
-        public float Saldo
+        public virtual float Saldo
         {
             get
             {
@@ -47,7 +47,7 @@ namespace state
             this.nazwa = nazwa;
         }
 
-        public void zmienSaldo( float dSaldo )
+        public virtual void zmienSaldo( float dSaldo )
         {
             if ( saldo + dSaldo < 0.0f ) throw new Exception("Ujemne saldo!");
             saldo += dSaldo;

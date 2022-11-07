@@ -7,20 +7,53 @@ using System.Threading.Tasks;
 
 namespace decorator
 {
-    internal class RachunekDebetowy : IRachunek
+    internal class RachunekDebetowy : Rachunek
     {
-        float debet;
+        float debet = 0.0f;
         float debetLimit = 300.0f;
 
-        Rachunek rachunek;
-        public RachunekDebetowy()
+        public override float Saldo
         {
-
+            get
+            {
+                return base.Saldo - debet;
+            }
         }
 
-        public void zmienSaldo(float dSaldo)
+        public RachunekDebetowy(string nazwa, float saldo, IMechanizmOdsetkowy mechanizm) : base(nazwa, saldo, mechanizm)
         {
-            throw new NotImplementedException();
+           
+        }
+
+        public RachunekDebetowy(string nazwa, float saldo) : base(nazwa, saldo)
+        {
+        }
+
+        public RachunekDebetowy(string nazwa) : base(nazwa)
+        {
+        }
+
+        public override void zmienSaldo(float dSaldo)
+        {
+            if( base.Saldo + dSaldo < 0 )
+            {
+                //Brak pieniedzy na saldzie rachunku, trzeba uzyc debetu.
+                float dodatkoweSaldo = (debetLimit - debet);
+                
+                if( base.Saldo + dSaldo + dodatkoweSaldo < 0 )
+                {
+                    //Limit debetu przekroczony, zgłaszamy blad
+                    throw new Exception("Kwota przekroczyla debet.");
+                } else
+                {
+                    debet -= base.Saldo + dSaldo;
+                    base.zmienSaldo(-base.Saldo);
+                }
+            } else
+            {
+                //Pieniadze sa, uzywamy salda.
+                base.zmienSaldo(dSaldo);
+            }
         }
     }
 }
